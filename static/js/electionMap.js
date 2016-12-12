@@ -1,5 +1,6 @@
 var countygeos = [];
 var electiondata = [];
+var colordata = [];
 
 var electionMap = function (opts) {
 
@@ -13,12 +14,12 @@ var electionMap = function (opts) {
     }
 
     electiondata = votedata;
-    console.log(electiondata[0]);
+
     // create the Map
     this.draw();
     this.setView();
     this.update();
-    
+
 }
 
 electionMap.prototype.draw = function () {
@@ -91,7 +92,6 @@ electionMap.prototype.draw = function () {
     /* COUNTIES */
     /* ------------------- */
     countygeos = this.geo.objects.counties.geometries;
-    console.log(countygeos);
 
     var counties = this.plot.append("g")
         .attr("class", "counties-g");
@@ -101,7 +101,7 @@ electionMap.prototype.draw = function () {
         .enter().append("path")
         .attr("d", _this.path)
         .attr("class", "county feature");
-        
+
 
     /* END COUNTIES */
     /* ------------------- */
@@ -172,7 +172,9 @@ electionMap.prototype.draw = function () {
 
 electionMap.prototype.setColor = function (val) {
     if (!val) {
-        return this.colors.blank; //Would add logic to here to color feature by result
+        return "blue";
+    } else {
+        return "red";
     }
 }
 
@@ -221,10 +223,8 @@ electionMap.prototype.setView = function () {
     } else if (this.view === "counties") {
         states.style("display", "none");
         counties.style("display", "inherit");
-    } 
+    }
 }
-
-
 
 
 
@@ -259,18 +259,18 @@ electionMap.prototype.update = function (liveData) {
     var counties = this.plot.select(".counties-g");
 
     states.selectAll("path")
-        .attr("fill", function (d) {
-            var winner = null;
-            return _this.setColor(winner);
+        .attr("fill", function (d) {            
+            return "grey";
         });
+
 
     counties.selectAll("path")
         .attr("fill", function (d) {
-            var winner = null;
-            return _this.setColor(winner);
+            
+            return "red";
         });
 
-    
+
 
 }
 
@@ -288,7 +288,7 @@ electionMap.prototype.homeButton = function () {
             //Recenter map
             _this.zoomScale(1, (_this.width) / 2, (_this.height / 2));
 
-            
+
             _this.setView();
             d3.select(this).style("display", "none");
 
@@ -312,7 +312,7 @@ electionMap.prototype.clicked = function (d, el) {
     var states = this.plot.select(".states-g");
     var counties = this.plot.select(".counties-g");
 
-    
+
     if (d && _this.centered !== d) {
 
         var centroid = _this.path.centroid(d);
@@ -335,12 +335,13 @@ electionMap.prototype.clicked = function (d, el) {
 
         d3.select(".home-btn").style("display", "none");
     }
-    
+
     var countyitems = [];
-    var first2id = d.id.toString().slice(0,2);
-    countygeos.forEach(function(item) {
-        if(item.id.toString().slice(0,2) === first2id) {
-                countyitems.push(item);
+    var first2id = d.id.toString().slice(0, 2);
+    countygeos.forEach(function (item) {
+        if (item.id.toString().slice(0, 2) === first2id) {
+            countyitems.push(item);
+
         }
     });
     // Remove all current counties
@@ -351,8 +352,20 @@ electionMap.prototype.clicked = function (d, el) {
         .data(topojson.feature(this.geo, this.geo.objects.counties).features)
         .enter().append("path")
         .attr("d", _this.path)
-        .attr("class", "county feature");
-        
+        .attr("class", "county feature")
+        .attr("fill", function (d) {
+            for (var i = 0; i < electiondata.length; i++) {
+                if (d.id === electiondata[i].combined_fips) {
+                    if (electiondata[i].votes_dem < electiondata[i].votes_gop) {
+                        return "red";
+                    } else {
+                        return "blue";
+                    }
+                }
+            }
+            //return "red";
+        });
+
     counties.style("display", "inherit");
     states.style("display", "inherit");
 
@@ -417,6 +430,21 @@ function init() {
         d3.select(window).on('resize', function () {
             theMap.update();
         });
+
+        for (var i = 0; i < electiondata.length; i++) {
+
+            // changes json file so that every fips is 5 characters long
+            if (electiondata[i].combined_fips < 10000) {
+                electiondata[i].combined_fips = "0" + electiondata[i].combined_fips;
+            }
+
+            if (electiondata[i].votes_dem < electiondata[i].votes_gop) {
+                colordata.push("Rep");
+            } else if (electiondata[i].votes_dem > electiondata[i].votes_gop) {
+                colordata.push("Dem");
+            }
+        }
+
 
     });
 }

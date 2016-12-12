@@ -24,10 +24,6 @@
     display: none;
 }
 
-.county {
-    fill: dimgrey;
-}
-
 .map-g .feature {
     stroke: #FFF;
     cursor: zoom-in;
