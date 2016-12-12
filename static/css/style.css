@@ -1,0 +1,16 @@
+footer {
+    text-align: center;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    overflow: auto;
+}
+
+ul{
+    list-style-type: none;
+    text-align: center;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
