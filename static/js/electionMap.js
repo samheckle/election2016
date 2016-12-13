@@ -355,7 +355,7 @@ electionMap.prototype.clicked = function (d, el) {
         .attr("class", "county feature")
         .attr("fill", function (d) {
             for (var i = 0; i < electiondata.length; i++) {
-                if (d.id === electiondata[i].combined_fips) {
+                if (d.id == electiondata[i].combined_fips) {
                     if (electiondata[i].votes_dem < electiondata[i].votes_gop) {
                         return "red";
                     } else {
@@ -363,7 +363,6 @@ electionMap.prototype.clicked = function (d, el) {
                     }
                 }
             }
-            //return "red";
         });
 
     counties.style("display", "inherit");
