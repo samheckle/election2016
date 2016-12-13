@@ -14,3 +14,12 @@ ul{
     margin: 0;
     padding: 0;
 }
+
+main{
+    width: 60%;
+    margin: auto;
+}
+
+h1{
+    font-size: 1.5em;
+}
