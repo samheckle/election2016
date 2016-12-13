@@ -407,7 +407,7 @@ electionMap.prototype.tooltip = function (d) {
 
 function init() {
 
-    d3.json("http://chriscanipe.com/data/us2016.topo.json", function (error, us) {
+    d3.json("https://people.rit.edu/~sxh4716/230/election2016/static/js/us2016.topo.json", function (error, us) {
         if (error) throw error;
 
 
